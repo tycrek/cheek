@@ -1,0 +1,21 @@
+doctype html
+html.dark.sl-theme-dark(lang='en')
+	head
+		meta(charset='UTF-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0')
+		title cheek setup
+		meta(name='theme-color' content='black')
+		style
+			!= css
+		//- Shoelace-FontAwesome Pug mixin
+		include ../node_modules/shoelace-fontawesome-pug/sl-fa-mixin.pug
+		include ../node_modules/shoelace-pug-loader/loader.pug
+		+slTheme('dark')
+		//- Shoelace components
+		+slComponents('input', 'icon', 'button')
+	body.w-screen.h-screen.flex.items-center.justify-center
+		.w-full.md_max-w-xl.flex.flex-col.p-2.md_p-8
+			h1.text-3xl.font-bold.font-monospace.text-center.mb-8 cheek setup
+			sl-input.mb-8#upload-token(type='text' placeholder='Upload token'): sl-icon(slot='prefix' name='fas-key' library='fa')
+			sl-button#submit(type='primary' submit) Submit
+		script(src='/ui.js')
