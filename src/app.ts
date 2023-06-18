@@ -54,4 +54,10 @@ const assets = (ctx: Context) => (ctx.env.ASSETS as Fetcher).fetch(ctx.req.raw);
 app
 	.get('/robots.txt', assets)
 	.get('/ui.js', assets);
+
+// Setup flow
+app
+	.get('/setup', assets)
+	.post((ctx) => ctx.text('Not implemented'));
+
 export default app;
