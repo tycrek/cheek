@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "author": "tycrek <t@tycrek.com> (https://tycrek.com)",
   "scripts": {
+    "build:app": "esbuild --bundle src/app.ts --outfile=dist/_worker.js --format=esm --minify",
+    "pagery": "node ./node_modules/pagery/dist/pagery.js --output=dist/",
+    "dev": "npm run build:app && npm run pagery && npx wrangler pages dev dist/ --r2 cheek",
+    "publish": "npm run build:app && npm run pagery && npm wrangler pages publish dist/ --project-name=cheek"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0",
