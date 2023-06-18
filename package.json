@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0",
+    "@shoelace-style/shoelace": "^2.4.0",
+    "esbuild": "^0.18.4",
     "pagery": "^0.4.0",
     "shoelace-fontawesome-pug": "^6.2.1",
     "shoelace-pug-loader": "^1.0.2",
