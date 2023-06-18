@@ -25,4 +25,24 @@ type Bindings = {
  */
 const app = new Hono<{ Bindings: Bindings }>();
 
+/**
+ * Check if bindings are ready
+ */
+const isBindingReady = (ctx: Context<{ Bindings: Bindings }>): Promise<boolean> => new Promise((resolve, reject) => {
+	try {
+
+		// Check cheek
+		const cheek = ctx.env.cheekstore;
+		if (!cheek) throw new Error('R2 Bucket not found. Register one under the ID `cheekstore`');
+
+		// Check kv
+		const kv = ctx.env.cheekkv;
+		if (!kv) throw new Error('Cloudflare KV not found. Register one under the ID `cheekkv`');
+
+		resolve(true);
+	} catch (err) {
+		reject(err);
+	}
+});
+
 export default app;
