@@ -60,4 +60,18 @@ app
 	.get('/setup', assets)
 	.post((ctx) => ctx.text('Not implemented'));
 
+// Index
+app.get('/', (ctx) => isBindingReady(ctx)
+	.then(async (bindingsReady) => {
+		if (!bindingsReady) return ctx.redirect('/setup');
+
+		// Check if KV has credentials
+		const kv = ctx.env.cheekkv;
+		const credentials = await kv.get('credentials');
+		if (!credentials) return ctx.redirect('/setup');
+
+		return assets(ctx);
+	})
+	.catch((err) => ctx.text(err.message, 500)));
+
 export default app;
