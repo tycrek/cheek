@@ -45,4 +45,13 @@ const isBindingReady = (ctx: Context<{ Bindings: Bindings }>): Promise<boolean> 
 	}
 });
 
+/**
+ * Quick-method to fetch static assets
+ */
+const assets = (ctx: Context) => (ctx.env.ASSETS as Fetcher).fetch(ctx.req.raw);
+
+// Static asset routes(robots.txt, ui.js)
+app
+	.get('/robots.txt', assets)
+	.get('/ui.js', assets);
 export default app;
