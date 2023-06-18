@@ -8,7 +8,7 @@
     "build:uijs": "esbuild --bundle src/frontend/ui.ts --format=esm --outfile=dist/ui.js",
     "pagery": "node ./node_modules/pagery/dist/pagery.js --output=dist/",
     "dev": "npm run build && npx wrangler pages dev dist/ --r2 cheekstore --kv cheekkv",
-    "publish": "npm run build && npm wrangler pages publish dist/ --project-name=cheek"
+    "publish": "npm run build && npx wrangler pages publish dist/ --project-name=cheek"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0",
