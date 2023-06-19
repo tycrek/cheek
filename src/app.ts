@@ -112,4 +112,7 @@ app.get('/', (ctx) => isBindingReady(ctx)
 	})
 	.catch((err) => ctx.text(err.message, 500)));
 
+// Index
+app.get('/', bindingReadyMiddleware, assets);
+
 export default app;
