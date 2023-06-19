@@ -1,4 +1,5 @@
-import { Hono, Context } from 'hono';
+import { Hono, Context, Next } from 'hono';
+import { nanoid } from 'nanoid';
 
 /**
  * Bindings introduced for Hono v3.0.0
@@ -112,6 +113,85 @@ app
 		// Setup complete
 		return ctx.text('Setup complete');
 	});
+
+// Upload route
+app.post('/upload', bindingReadyMiddleware, async (ctx) => {
+
+	// Get Authorization header & credentials for comparison
+	const auth = ctx.req.headers.get('Authorization');
+	const credentials = await ctx.env.cheekkv.get('credentials');
+
+	// Check if credentials are valid
+	if (!auth || auth !== credentials) return ctx.text('Invalid credentials', 401);
+
+	// Parse body
+	const { image } = await ctx.req.parseBody();
+
+	// Check if image is present
+	if (image instanceof File) {
+
+		// Get binary data buffer
+		const buffer = await image.arrayBuffer();
+
+		// Recursive ID generation
+		const generateID = async (): Promise<string> => {
+			const id = nanoid(8);
+			const existing = await ctx.env.cheekkv.get(id);
+			return (existing) ? generateID() : id;
+		};
+
+		// Generate image metadata
+		const metadata: Image = {
+			id: await generateID(),
+			hash: await sha256(buffer),
+			filename: image.name,
+			type: image.type,
+			time: Date.now()
+		};
+
+		// Save metadata to KV
+		await ctx.env.cheekkv.put(metadata.id, JSON.stringify(metadata));
+
+		// Save image to R2 Bucket
+		await ctx.env.cheekstore.put(metadata.hash, buffer);
+
+		// get the domain
+		const domain = ctx.req.headers.get('Host') || 'localhost';
+
+		// get secure protocol
+		const protocol = ctx.req.headers.get('X-Forwarded-Proto') || 'http';
+
+		// Return image URL
+		const url = `${protocol}://${domain}/${metadata.id}`;
+		console.log(url);
+		return ctx.text(url);
+	} else return ctx.text('Please provide an image', 400);
+});
+
+// Image route
+app.get('/:id', bindingReadyMiddleware, async (ctx) => {
+
+	// Check if image exists
+	const kv = ctx.env.cheekkv;
+	const metadata = JSON.parse(await kv.get(ctx.req.param('id'))) as Image;
+	if (!metadata) return ctx.text('Image not found', 404);
+
+	// Fetch image from R2 Bucket
+	const cheek = ctx.env.cheekstore;
+	const file = await cheek.get(metadata.hash);
+
+	// Set content headers
+	ctx.res.headers.set('Content-Disposition', `inline; filename="${metadata.filename}"`);
+	ctx.res.headers.set('Content-Type', metadata.type);
+
+	// Set cache headers
+	ctx.res.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+	ctx.res.headers.set('ETag', metadata.hash);
+	ctx.res.headers.set('Last-Modified', new Date(metadata.time).toUTCString());
+
+	// Return image
+	return ctx.body(file.body);
+});
 
 // Index
 app.get('/', bindingReadyMiddleware, assets);
