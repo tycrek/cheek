@@ -85,10 +85,10 @@ const sha256 = (image: ArrayBuffer): Promise<string> => new Promise((resolve, re
 
 /**
 * Quick-method to fetch static assets
- */
+*/
 const assets = (ctx: Context) => (ctx.env.ASSETS as Fetcher).fetch(ctx.req.raw);
 
-// Static asset routes(robots.txt, ui.js)
+// Static asset routes
 app
 	.get('/robots.txt', assets)
 	.get('/ui.js', assets);
@@ -96,21 +96,22 @@ app
 // Setup flow
 app
 	.get('/setup', assets)
-	.post((ctx) => ctx.text('Not implemented'));
+	.post(async (ctx) => {
 
-// Index
-app.get('/', (ctx) => isBindingReady(ctx)
-	.then(async (bindingsReady) => {
-		if (!bindingsReady) return ctx.redirect('/setup');
+		// Parse body
+		const { UPLOAD_TOKEN } = await ctx.req.json();
 
-		// Check if KV has credentials
+		// Check if values are valid (at least 16 characters)
+		if (!UPLOAD_TOKEN || UPLOAD_TOKEN.length < 16)
+			return ctx.text('Please enter a valid Upload Token (at least 16 characters)');
+
+		// Save values to KV
 		const kv = ctx.env.cheekkv;
-		const credentials = await kv.get('credentials');
-		if (!credentials) return ctx.redirect('/setup');
+		await kv.put('credentials', UPLOAD_TOKEN);
 
-		return assets(ctx);
-	})
-	.catch((err) => ctx.text(err.message, 500)));
+		// Setup complete
+		return ctx.text('Setup complete');
+	});
 
 // Index
 app.get('/', bindingReadyMiddleware, assets);
