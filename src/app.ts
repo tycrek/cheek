@@ -57,7 +57,34 @@ const isBindingReady = (ctx: Context<{ Bindings: Bindings }>): Promise<boolean> 
 });
 
 /**
- * Quick-method to fetch static assets
+ * Hono middleware for checking if bindings are ready
+ */
+const bindingReadyMiddleware = (ctx: Context<{ Bindings: Bindings }>, next: Next) =>
+	isBindingReady(ctx)
+		.then(async (bindingsReady) => {
+			if (!bindingsReady) return ctx.redirect('/setup');
+
+			// Check if KV has credentials
+			const credentials = await ctx.env.cheekkv.get('credentials');
+			if (!credentials) return ctx.redirect('/setup');
+
+			return next();
+		})
+		.catch((err) => ctx.text(err.message, 500));
+
+/**
+ * Generate SHA256 hash from ArrayBuffer
+ */
+const sha256 = (image: ArrayBuffer): Promise<string> => new Promise((resolve, reject) =>
+	crypto.subtle.digest('SHA-256', image)
+		.then((hash) => resolve(Array
+			.from(new Uint8Array(hash))
+			.map((b) => b.toString(16).padStart(2, '0'))
+			.join('')))
+		.catch(reject));
+
+/**
+* Quick-method to fetch static assets
  */
 const assets = (ctx: Context) => (ctx.env.ASSETS as Fetcher).fetch(ctx.req.raw);
 
