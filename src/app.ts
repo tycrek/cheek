@@ -21,6 +21,17 @@ type Bindings = {
 }
 
 /**
+ * Represents Image metadata which is stored in KV
+ */
+interface Image {
+	id: string;
+	hash: string;
+	filename: string;
+	type: string;
+	time: number;
+}
+
+/**
  * Create a new Hono app
  */
 const app = new Hono<{ Bindings: Bindings }>();
