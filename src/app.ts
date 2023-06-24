@@ -99,6 +99,10 @@ app
 	.get('/setup', assets)
 	.post(async (ctx) => {
 
+		// Check if KV already has credentials
+		if (await ctx.env.cheekkv.get('credentials'))
+			return ctx.text('Setup already complete');
+
 		// Parse body
 		const { UPLOAD_TOKEN } = await ctx.req.json();
 
