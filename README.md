@@ -3,7 +3,7 @@
 😝 cheek
 ===
 
-*ass cheek. mhm.*
+*ass cheek. a serverless ShareX server.*
 
 </div>
 
