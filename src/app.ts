@@ -177,7 +177,7 @@ app.get('/:id', bindingReadyMiddleware, async (ctx) => {
 
 	// Check if image exists
 	const kv = ctx.env.cheekkv;
-	const metadata = JSON.parse(await kv.get(ctx.req.param('id'))) as Image;
+	const metadata = JSON.parse(await kv.get(ctx.req.param('id').split('.')[0])) as Image;
 	if (!metadata) return ctx.text('Image not found', 404);
 
 	// Fetch image from R2 Bucket
