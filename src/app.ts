@@ -30,6 +30,19 @@ interface Image {
 	filename: string;
 	type: string;
 	time: number;
+	embed?: {
+		title?: string;
+		description?: string;
+		author?: {
+			name?: string;
+			url?: string;
+		}
+		provider?: {
+			name?: string;
+			url?: string;
+		}
+		color?: string;
+	}
 }
 
 /**
@@ -152,6 +165,24 @@ app.post('/upload', bindingReadyMiddleware, async (ctx) => {
 			type: image.type,
 			time: Date.now()
 		};
+
+		// Extract embed data from Headers (if present)
+		const embed = ctx.req.headers.get('x-cheek-title') === '' ? undefined : {
+			title: ctx.req.headers.get('x-cheek-title'),
+			description: ctx.req.headers.get('x-cheek-description') || undefined,
+			author: {
+				name: ctx.req.headers.get('x-cheek-author-name') || undefined,
+				url: ctx.req.headers.get('x-cheek-author-url') || undefined
+			},
+			provider: {
+				name: ctx.req.headers.get('x-cheek-provider-name') || undefined,
+				url: ctx.req.headers.get('x-cheek-provider-url') || undefined
+			},
+			color: ctx.req.headers.get('x-cheek-color') || undefined
+		};
+
+		// Add embed data to metadata
+		if (embed) metadata.embed = embed;
 
 		// Save metadata to KV
 		await ctx.env.cheekkv.put(metadata.id, JSON.stringify(metadata));
