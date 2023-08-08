@@ -1,5 +1,6 @@
 import { Hono, Context, Next } from 'hono';
 import { nanoid } from 'nanoid';
+import genHTML from './discord';
 
 /**
  * Bindings introduced for Hono v3.0.0
@@ -44,6 +45,8 @@ interface Image {
 		color?: string;
 	}
 }
+
+export { Image };
 
 /**
  * Create a new Hono app
@@ -215,14 +218,58 @@ app.get('/:id', bindingReadyMiddleware, async (ctx) => {
 	const cheek = ctx.env.cheekstore;
 	const file = await cheek.get(metadata.hash);
 
-	// Set content headers
-	ctx.res.headers.set('Content-Disposition', `inline; filename="${metadata.filename}"`);
+	// Set cache headers
+	ctx.res.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+	ctx.res.headers.set('ETag', metadata.hash);
+	ctx.res.headers.set('Last-Modified', new Date(metadata.time).toUTCString());
+
+	// set content type
 	ctx.res.headers.set('Content-Type', metadata.type);
+
+	//Check if Discord
+	const useragent = ctx.req.headers.get("user-agent").toLowerCase();
+	if (useragent === "discord") {
+		// get the domain
+		const domain = ctx.req.headers.get('Host') || 'localhost';
+
+		// get secure protocol
+		const protocol = ctx.req.headers.get('X-Forwarded-Proto') || 'http';
+
+		// make url & html
+		const URL = `${protocol}://${domain}/${metadata.id}/raw`;
+		const html = genHTML(metadata, URL);
+		return ctx.html(html);
+	} else {
+		//TODO make this actually show a pretty preview like ASS? 
+
+		// Set content headers
+		ctx.res.headers.set('Content-Disposition', `inline; filename="${metadata.filename}"`);
+
+		// Return image
+		return ctx.body(file.body);
+	}
+});
+
+// Raw Image route
+app.get('/:id/raw', bindingReadyMiddleware, async (ctx) => {
+
+	// Check if image exists
+	const kv = ctx.env.cheekkv;
+	const metadata = JSON.parse(await kv.get(ctx.req.param('id').split('.')[0])) as Image;
+	if (!metadata) return ctx.text('Image not found', 404);
+
+	// Fetch image from R2 Bucket
+	const cheek = ctx.env.cheekstore;
+	const file = await cheek.get(metadata.hash);
 
 	// Set cache headers
 	ctx.res.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
 	ctx.res.headers.set('ETag', metadata.hash);
 	ctx.res.headers.set('Last-Modified', new Date(metadata.time).toUTCString());
+
+	// Set content headers
+	ctx.res.headers.set('Content-Type', metadata.type);
+	ctx.res.headers.set('Content-Disposition', `inline; filename="${metadata.filename}"`);
 
 	// Return image
 	return ctx.body(file.body);
