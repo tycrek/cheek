@@ -1,6 +1,6 @@
 import { DiscordEmbed } from './app';
 
-export const buildHtml = (url: string, video: boolean, embed?: DiscordEmbed) =>
+export const buildHtml = (url: string, type: string, embed?: DiscordEmbed) =>
 	`
 <!DOCTYPE HTML>
 <html>
@@ -27,7 +27,7 @@ export const buildHtml = (url: string, video: boolean, embed?: DiscordEmbed) =>
 		`<meta property="og:description" content="${embed.description}">` : ''}
 		${embed && embed.color ?
 		`<meta name="theme-color" content="${embed.color}">` : ''}
-		${embed && !video ?
+		${embed && !type.includes('video') ?
 		`<meta name="twitter:card" content="summary_large_image">` : ''}
 	</head>
 	<body>

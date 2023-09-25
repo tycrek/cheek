@@ -223,7 +223,7 @@ app.get('/:id', bindingReadyMiddleware, async (ctx) => {
 
 	// Check if using Discord
 	if (ctx.req.header('User-Agent').toLocaleLowerCase().includes('discord') && ctx.req.query('direct') !== 'true')
-		return ctx.html(buildHtml(ctx.req.url.concat('?direct=true'), metadata.type.includes('video'), metadata.embed));
+		return ctx.html(buildHtml(ctx.req.url.concat('?direct=true'), metadata.type, metadata.embed));
 
 	// Set content headers
 	ctx.res.headers.set('Content-Disposition', `inline; filename="${metadata.filename}"`);
