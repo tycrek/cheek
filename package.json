@@ -11,16 +11,16 @@
     "publish": "npm run build && npx wrangler pages publish dist/ --project-name=cheek"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230518.0",
-    "@shoelace-style/shoelace": "^2.4.0",
-    "esbuild": "^0.18.4",
-    "pagery": "^0.4.0",
+    "@cloudflare/workers-types": "^4.20230914.0",
+    "@shoelace-style/shoelace": "^2.8.0",
+    "esbuild": "^0.19.3",
+    "pagery": "^0.5.1",
     "shoelace-fontawesome-pug": "^6.2.1",
     "shoelace-pug-loader": "^1.0.2",
-    "typescript": "^5.1.3"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "hono": "^3.2.5",
+    "hono": "^3.7.2",
     "nanoid": "^4.0.2"
   }
 }
