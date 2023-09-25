@@ -1,13 +1,19 @@
 import { DiscordEmbed } from './app';
 
+/**
+ * Builds HTML for Discord. Yes I know this function is kind of disgusting.
+ */
 export const buildHtml = (url: string, type: string, embed?: DiscordEmbed) =>
 	`
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<!-- cheek Discord viewer page -->
+
 		<meta name="viewport" content="width=device-width; height=device-height;">
 		<title>${url}</title>
 		<style>
+			/* CSS "borrowed" from Firefox image viewer */
 			body {
 				margin: 0;
 				background-color: #222;
@@ -21,17 +27,23 @@ export const buildHtml = (url: string, type: string, embed?: DiscordEmbed) =>
 				margin: auto;
 			}
 		</style>
-		${embed && embed.title ?
+
+		${ /* Title */ embed && embed.title ?
 		`<meta property="og:title" content="${embed.title}">` : ''}
-		${embed && embed.description ?
+
+		${ /* Description */ embed && embed.description ?
 		`<meta property="og:description" content="${embed.description}">` : ''}
-		${embed && embed.color ?
+
+		${ /* Colour */ embed && embed.color ?
 		`<meta name="theme-color" content="${embed.color}">` : ''}
-		${embed && !type.includes('video') ?
+
+		${ /* Non-video gets Twitter Card Large */ embed && !type.includes('video') ?
 		`<meta name="twitter:card" content="summary_large_image">` : ''}
-		${embed ?
+
+		${ /* Resource type */ embed ?
 		`<meta name="og:type" content="${type.includes('video') ? 'video.other' : type.includes('image') ? 'image' : 'website'}">` : ''}
-		${embed ?
+
+		${ /* Resource URL */ embed ?
 		`<meta name="og:${type.includes('video') ? 'video' : 'image'}" content="${url}">` : ''}
 	</head>
 	<body>
