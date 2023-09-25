@@ -6,7 +6,7 @@
     "build": "npm run build:app && npm run build:uijs && npm run pagery",
     "build:app": "esbuild --bundle src/app.ts --outfile=dist/_worker.js --format=esm --minify",
     "build:uijs": "esbuild --bundle src/frontend/ui.ts --format=esm --outfile=dist/ui.js",
-    "pagery": "node ./node_modules/pagery/dist/pagery.js --output=dist/",
+    "pagery": "node ./node_modules/pagery/dist/pagery.js --output=dist/ --outputCss=false",
     "dev": "npm run build && npx wrangler pages dev dist/ --r2 cheekstore --kv cheekkv",
     "publish": "npm run build && npx wrangler pages publish dist/ --project-name=cheek"
   },
