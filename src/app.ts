@@ -1,5 +1,6 @@
 import { Hono, Context, Next } from 'hono';
 import { nanoid } from 'nanoid';
+import { buildHtml } from './viewer';
 
 /**
  * Bindings introduced for Hono v3.0.0
@@ -22,6 +23,23 @@ type Bindings = {
 }
 
 /**
+ * Represents Discord Embed data
+ */
+export interface DiscordEmbed {
+	title?: string;
+	description?: string;
+	author?: {
+		name?: string;
+		url?: string;
+	}
+	provider?: {
+		name?: string;
+		url?: string;
+	}
+	color?: string;
+}
+
+/**
  * Represents Image metadata which is stored in KV
  */
 interface Image {
@@ -30,6 +48,7 @@ interface Image {
 	filename: string;
 	type: string;
 	time: number;
+	embed?: DiscordEmbed;
 }
 
 /**
@@ -153,6 +172,24 @@ app.post('/upload', bindingReadyMiddleware, async (ctx) => {
 			time: Date.now()
 		};
 
+		// Extract embed data from Headers (if present)
+		const embed = ctx.req.headers.get('x-cheek-title') === '' ? undefined : {
+			title: ctx.req.headers.get('x-cheek-title'),
+			description: ctx.req.headers.get('x-cheek-description') || undefined,
+			author: {
+				name: ctx.req.headers.get('x-cheek-author-name') || undefined,
+				url: ctx.req.headers.get('x-cheek-author-url') || undefined
+			},
+			provider: {
+				name: ctx.req.headers.get('x-cheek-provider-name') || undefined,
+				url: ctx.req.headers.get('x-cheek-provider-url') || undefined
+			},
+			color: ctx.req.headers.get('x-cheek-color') || undefined
+		};
+
+		// Add embed data to metadata
+		if (embed) metadata.embed = embed;
+
 		// Save metadata to KV
 		await ctx.env.cheekkv.put(metadata.id, JSON.stringify(metadata));
 
@@ -183,6 +220,10 @@ app.get('/:id', bindingReadyMiddleware, async (ctx) => {
 	// Fetch image from R2 Bucket
 	const cheek = ctx.env.cheekstore;
 	const file = await cheek.get(metadata.hash);
+
+	// Check if using Discord
+	if (ctx.req.header('User-Agent').toLocaleLowerCase().includes('discord') && ctx.req.query('direct') !== 'true')
+		return ctx.html(buildHtml(ctx.req.url.concat('?direct=true'), metadata.type.includes('video'), metadata.embed));
 
 	// Set content headers
 	ctx.res.headers.set('Content-Disposition', `inline; filename="${metadata.filename}"`);
