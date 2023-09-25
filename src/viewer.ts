@@ -29,9 +29,13 @@ export const buildHtml = (url: string, type: string, embed?: DiscordEmbed) =>
 		`<meta name="theme-color" content="${embed.color}">` : ''}
 		${embed && !type.includes('video') ?
 		`<meta name="twitter:card" content="summary_large_image">` : ''}
+		${embed ?
+		`<meta name="og:type" content="${type.includes('video') ? 'video.other' : type.includes('image') ? 'image' : 'website'}">` : ''}
+		${embed ?
+		`<meta name="og:${type.includes('video') ? 'video' : 'image'}" content="${url}">` : ''}
 	</head>
 	<body>
-		<img src="${url}" alt="${url}"></img>
+		<img src="${url}" alt="Discord viewer for resource: ${url}"></img>
 	</body>
 </html>
 `;
