@@ -1,6 +1,6 @@
 {
   "name": "cheek",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "tycrek <t@tycrek.com> (https://tycrek.com)",
   "scripts": {
     "build": "npm run build:app && npm run build:uijs && npm run pagery",
