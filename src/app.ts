@@ -1,6 +1,6 @@
 import { Hono, Context, Next } from 'hono';
 import { nanoid } from 'nanoid';
-import { buildHtml } from './viewer';
+import { buildHtml } from './discord';
 
 /**
  * Bindings introduced for Hono v3.0.0
