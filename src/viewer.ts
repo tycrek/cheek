@@ -7,27 +7,8 @@ export const buildHtml = (url: string, type: string, embed?: DiscordEmbed) =>
 	`
 <!DOCTYPE HTML>
 <html>
+	<!-- cheek Discord viewer page -->
 	<head>
-		<!-- cheek Discord viewer page -->
-
-		<meta name="viewport" content="width=device-width; height=device-height;">
-		<title>${url}</title>
-		<style>
-			/* CSS "borrowed" from Firefox image viewer */
-			body {
-				margin: 0;
-				background-color: #222;
-			}
-			img {
-				display: block;
-				image-orientation: from-image;
-				text-align: center;
-				position: absolute;
-				inset: 0;
-				margin: auto;
-			}
-		</style>
-
 		${ /* Title */ embed && embed.title ?
 		`<meta property="og:title" content="${embed.title}">` : ''}
 
@@ -46,8 +27,5 @@ export const buildHtml = (url: string, type: string, embed?: DiscordEmbed) =>
 		${ /* Resource URL */ embed ?
 		`<meta name="og:${type.includes('video') ? 'video' : 'image'}" content="${url}">` : ''}
 	</head>
-	<body>
-		<img src="${url}" alt="Discord viewer for resource: ${url}"></img>
-	</body>
 </html>
 `;
