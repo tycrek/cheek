@@ -11,8 +11,7 @@ html.dark.sl-theme-dark(lang='en')
 		include ../node_modules/shoelace-fontawesome-pug/sl-fa-mixin.pug
 		include ../node_modules/shoelace-pug-loader/loader.pug
 		+slTheme('dark')
-		//- Shoelace components
-		+slComponents('input', 'icon', 'button')
+		+slAuto
 	body.w-screen.h-screen.flex.items-center.justify-center
 		.w-full.md_max-w-xl.flex.flex-col.p-2.md_p-8
 			h1.text-3xl.font-bold.font-monospace.text-center.mb-8 cheek setup
