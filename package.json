@@ -11,12 +11,12 @@
     "publish": "npm run build && npx wrangler pages deploy dist/ --project-name=cheek"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230914.0",
-    "@shoelace-style/shoelace": "^2.8.0",
-    "esbuild": "^0.19.3",
-    "pagery": "^0.5.1",
-    "shoelace-fontawesome-pug": "^6.2.1",
-    "shoelace-pug-loader": "^1.0.2",
+    "@cloudflare/workers-types": "^4.20231016.0",
+    "@shoelace-style/shoelace": "^2.11.0",
+    "esbuild": "^0.19.5",
+    "pagery": "^0.6.4",
+    "shoelace-fontawesome-pug": "^6.4.3",
+    "shoelace-pug-loader": "^2.11.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
