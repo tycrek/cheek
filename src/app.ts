@@ -141,7 +141,7 @@ app
 app.post('/upload', bindingReadyMiddleware, async (ctx) => {
 
 	// Get Authorization header & credentials for comparison
-	const auth = ctx.req.headers.get('Authorization');
+	const auth = ctx.req.header('Authorization');
 	const credentials = await ctx.env.cheekkv.get('credentials');
 
 	// Check if credentials are valid
@@ -173,18 +173,18 @@ app.post('/upload', bindingReadyMiddleware, async (ctx) => {
 		};
 
 		// Extract embed data from Headers (if present)
-		const embed = ctx.req.headers.get('x-cheek-title') === '' ? undefined : {
-			title: ctx.req.headers.get('x-cheek-title'),
-			description: ctx.req.headers.get('x-cheek-description') || undefined,
+		const embed = ctx.req.header('x-cheek-title') === '' ? undefined : {
+			title: ctx.req.header('x-cheek-title'),
+			description: ctx.req.header('x-cheek-description') || undefined,
 			author: {
-				name: ctx.req.headers.get('x-cheek-author-name') || undefined,
-				url: ctx.req.headers.get('x-cheek-author-url') || undefined
+				name: ctx.req.header('x-cheek-author-name') || undefined,
+				url: ctx.req.header('x-cheek-author-url') || undefined
 			},
 			provider: {
-				name: ctx.req.headers.get('x-cheek-provider-name') || undefined,
-				url: ctx.req.headers.get('x-cheek-provider-url') || undefined
+				name: ctx.req.header('x-cheek-provider-name') || undefined,
+				url: ctx.req.header('x-cheek-provider-url') || undefined
 			},
-			color: ctx.req.headers.get('x-cheek-color') || undefined
+			color: ctx.req.header('x-cheek-color') || undefined
 		};
 
 		// Add embed data to metadata
@@ -197,10 +197,10 @@ app.post('/upload', bindingReadyMiddleware, async (ctx) => {
 		await ctx.env.cheekstore.put(metadata.hash, buffer);
 
 		// get the domain
-		const domain = ctx.req.headers.get('Host') || 'localhost';
+		const domain = ctx.req.header('Host') || 'localhost';
 
 		// get secure protocol
-		const protocol = ctx.req.headers.get('X-Forwarded-Proto') || 'http';
+		const protocol = ctx.req.header('X-Forwarded-Proto') || 'http';
 
 		// Return image URL
 		const url = `${protocol}://${domain}/${metadata.id}`;
