@@ -209,6 +209,37 @@ app.post('/upload', bindingReadyMiddleware, async (ctx) => {
 	} else return ctx.text('Please provide an image', 400);
 });
 
+// Delete route
+app.delete('/delete', bindingReadyMiddleware, async (ctx) => {
+
+	// Get Authorization header & credentials for comparison
+	const auth = ctx.req.header('Authorization');
+	const credentials = await ctx.env.cheekkv.get('credentials');
+
+	// Check if credentials are valid
+	if (!auth || auth !== credentials) return ctx.text('Invalid credentials', 401);
+
+	// Parse body
+	const { id } = await ctx.req.json();
+
+	// Check if ID is provided
+	if (!id) return ctx.text('Please provide an image ID', 400);
+
+    // Retrieve image metadata from KV
+    const metadataString = await ctx.env.cheekkv.get(id);
+    if (!metadataString) return ctx.text('Image not found', 404);
+
+	const metadata = JSON.parse(metadataString);
+  
+	// Delete image from R2 Bucket
+	await ctx.env.cheekstore.delete(metadata.hash);
+  
+	// Delete metadata from KV
+	await ctx.env.cheekkv.delete(id);
+  
+	return ctx.text('Image deleted successfully');
+});
+
 // Image route
 app.get('/:id', bindingReadyMiddleware, async (ctx) => {
 
