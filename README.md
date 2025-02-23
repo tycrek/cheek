@@ -1,3 +1,5 @@
+## note: i don't plan to update this project. please refer to [yaass](https://github.com/tycrek/yaass) instead.
+
 <div align="center">
 
 😝 cheek
